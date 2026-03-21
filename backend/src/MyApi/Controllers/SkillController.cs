@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using MyApi.Managers.Abstracts;
 using MyApi.Models.DTOs.SkillDtos;
 using MyApi.Repositories.Abstracts;
 
@@ -8,62 +9,96 @@ namespace MyApi.Controllers;
 [Route("api/[controller]")]
 public class SkillController : ControllerBase
 {
-    private readonly ISkillRepository _skillRepository;
+    private readonly ISkillManager _manager;
 
-    public SkillController(ISkillRepository skillRepository)
+    public SkillController(ISkillManager manager)
     {
-        _skillRepository = skillRepository;
+        _manager = manager;
     }
 
-    [HttpGet("get-skills")]
-    public async Task<IActionResult> GetAll() => Ok(await _skillRepository.GetAllAsync());
 
-    [HttpGet("get-skills-for-ui")]
-    public async Task<IActionResult> GetAllForUi() => Ok(await _skillRepository.GetAllForUiAsync());
+    [HttpGet("get-all")]
+    public async Task<IActionResult> GetAll()
+    {
+        try
+        {
+            var skills = await _manager.GetAllAsync();
+            return Ok(skills);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
 
-    [HttpGet("get-skill/{id}")]
-    public async Task<IActionResult> GetSinge(string id) => Ok(await _skillRepository.GetByIdAsync(Guid.Parse(id)));
+    [HttpGet("get-all-for-ui")]
+    public async Task<IActionResult> GetAllForUi()
+    {
+        try
+        {
+            var skills = await _manager.GetAllForUiAsync();
+            return Ok(skills);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
 
-    [HttpPost("create-skill")]
+    [HttpGet("get-by-id/{id}")]
+    public async Task<IActionResult> GetById(string id)
+    {
+        try
+        {
+            var skill = await _manager.GetByIdAsync(id);
+            return Ok(skill);
+        }
+        catch (Exception ex)
+        {
+            return NotFound(new { Message = ex.Message });
+        }
+    }
+
+    [HttpPost("create")]
     public async Task<IActionResult> Create(CreateSkillDto dto)
     {
-        await _skillRepository.CreateAsync(new()
+        try
         {
-            Name = dto.Name,
-            Value = dto.Value
-        });
-        await _skillRepository.SaveAsync();
-        return Ok(new { Message = "Skill created successfully." });
+            await _manager.CreateAsync(dto);
+            return Ok(new { Message = "Yetenek başarıyla eklendi." });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
     }
 
-    [HttpPut("update-skill")]
+    [HttpPut("update")]
     public async Task<IActionResult> Update(UpdateSkillDto dto)
     {
-        var skill = await _skillRepository.GetByIdAsync(dto.Id);
-        if (skill is null)
-            return NotFound(new { Message = "Skill not found." });
-
-        skill.Name = dto.Name;
-        skill.Value = dto.Value;
-
-        _skillRepository.Update(new Models.Entities.Skill
+        try
         {
-            Id = dto.Id,
-            Name = dto.Name,
-            Value = dto.Value,
-        });
-        await _skillRepository.SaveAsync();
-        return Ok(new { Message = "Skill updated successfully." });
+            await _manager.UpdateAsync(dto);
+            return Ok(new { Message = "Yetenek başarıyla güncellendi." });
+        }
+        catch (Exception ex)
+        {
+            // Manager içinde fırlattığımız "bulunamadı" hatası buraya düşer
+            return BadRequest(new { Message = ex.Message });
+        }
     }
 
-    [HttpDelete("delete-skill/{id}")]
+    [HttpDelete("remove/{id}")]
     public async Task<IActionResult> Delete(string id)
     {
-        var skill = await _skillRepository.GetByIdAsync(Guid.Parse(id));
-        if (skill is null)
-            return NotFound(new { Message = "Skill not found." });
-        _skillRepository.RemoveById(Guid.Parse(id));
-        await _skillRepository.SaveAsync();
-        return Ok(new { Message = "Skill deleted successfully." });
+        try
+        {
+            await _manager.RemoveAsync(id);
+            return Ok(new { Message = "Yetenek başarıyla silindi." });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
     }
 }

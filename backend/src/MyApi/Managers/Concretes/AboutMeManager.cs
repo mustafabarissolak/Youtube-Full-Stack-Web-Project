@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using MyApi.Managers.Abstracts;
 using MyApi.Models.DTOs.AboutMeDtos;
 using MyApi.Repositories.Abstracts;
@@ -17,8 +18,10 @@ public class AboutMeManager : IAboutMeManager
     {
         try
         {
-            await _repository.CreateAsync(new()
+            await _repository.AddAsync(new()
             {
+                Id = Guid.NewGuid(),
+                CreatedDate = DateTime.UtcNow,
                 Title = dto.Title,
                 Description = dto.Description
             });
@@ -34,8 +37,15 @@ public class AboutMeManager : IAboutMeManager
     {
         try
         {
-            return await _repository.GetAllAsync();
-
+            var abouts = _repository.GetAll();
+            return await abouts.Select(a => new ResultAboutMeDto
+            {
+                Id = a.Id,
+                Title = a.Title,
+                Description = a.Description,
+                CreatedDate = a.CreatedDate,
+                UpdatedDate = a.UpdatedDate
+            }).ToListAsync();
         }
         catch (Exception ex)
         {
@@ -47,7 +57,11 @@ public class AboutMeManager : IAboutMeManager
     {
         try
         {
-            return await _repository.GetAllForUiAsync();
+            return await _repository.GetAll(tracking: false).Select(a => new ResultForUiAboutMeDto
+            {
+                Title = a.Title,
+                Description = a.Description
+            }).ToListAsync();
         }
         catch (Exception ex)
         {
@@ -59,10 +73,17 @@ public class AboutMeManager : IAboutMeManager
     {
         try
         {
-            var dto = await _repository.GetByIdAsync(Guid.Parse(id));
-            if (dto == null)
+            var about = await _repository.GetByIdAsync(Guid.Parse(id));
+            if (about == null)
                 throw new Exception($"Hakkimda bilgisi bulunamadi. Id: {id}");
-            return dto;
+            return new ResultAboutMeDto
+            {
+                Id = about.Id,
+                Title = about.Title,
+                Description = about.Description,
+                CreatedDate = about.CreatedDate,
+                UpdatedDate = about.UpdatedDate
+            };
         }
         catch (Exception ex)
         {
@@ -74,7 +95,10 @@ public class AboutMeManager : IAboutMeManager
     {
         try
         {
-            _repository.RemoveById(Guid.Parse(id));
+            var existing = await _repository.GetByIdAsync(Guid.Parse(id));
+            if (existing == null)
+                throw new Exception($"Silinecek Hakkimda bilgisi bulunamadi. Id: {id}");
+            _repository.Remove(existing);
             await _repository.SaveAsync();
         }
         catch (Exception ex)
@@ -87,13 +111,15 @@ public class AboutMeManager : IAboutMeManager
     {
         try
         {
-            _repository.Update(new()
-            {
-                Id = dto.Id,
-                Title = dto.Title,
-                Description = dto.Description,
-                UpdatedDate = DateTime.UtcNow
-            });
+            var existing = await _repository.GetByIdAsync(dto.Id);
+
+            if (existing == null)
+                throw new Exception($"Hakkimda bilgisi bulunamadi. Id: {dto.Id}");
+
+            existing.Title = dto.Title;
+            existing.Description = dto.Description;
+            existing.UpdatedDate = DateTime.UtcNow;
+
             await _repository.SaveAsync();
         }
         catch (Exception ex)

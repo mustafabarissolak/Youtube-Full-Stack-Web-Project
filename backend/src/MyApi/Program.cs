@@ -1,23 +1,9 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using MyApi.Context;
-using MyApi.Managers.Abstracts;
-using MyApi.Managers.Concretes;
-using MyApi.Repositories.Abstracts;
-using MyApi.Repositories.Concretes;
+using MyApi.Extensions;
 
 var builder = WebApplication.CreateBuilder(args); // Uygulamanın yapılandırıcısını başlatır (Ayarlar, Servisler burada toplanır).
 
-builder.Services.AddDbContext<AppDbContext>(opt =>
-                    opt.UseNpgsql(builder.Configuration.GetConnectionString("PostgreSQLConnection")));
-
-// --- 1. SERVİS KAYITLARI (DEPENDENCY INJECTION - DI) ---
-// Burada uygulamada kullanılacak "araçları" sisteme tanıtıyoruz.
-builder.Services.AddScoped<ISkillRepository, SkillRepository>();
-builder.Services.AddScoped<IAboutMeRepository, AboutMeRepository>();
-
-builder.Services.AddScoped<IAboutMeManager, AboutMeManager>();
-
+builder.Services.AddApplicationServices(builder.Configuration);
 
 // [Controller Desteği]
 // Minimal API yerine [ApiController] attribute'u kullanılan sınıfları (Controllers klasörü) tanımasını sağlar.

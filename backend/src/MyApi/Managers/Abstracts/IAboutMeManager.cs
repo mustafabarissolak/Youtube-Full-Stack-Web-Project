@@ -12,4 +12,3 @@ public interface IAboutMeManager
     Task UpdateAsync(UpdateAboutMeDto dto);
     Task RemoveByIdAsync(string id);
 }
-
