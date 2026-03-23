@@ -40,7 +40,7 @@ chmod +x scripts/*.sh
 
 ---
 
-## 🔄 Güncel veriyi almak:
+## Güncel veriyi almak:
 
 
 git pull
