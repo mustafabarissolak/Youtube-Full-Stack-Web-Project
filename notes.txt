@@ -21,6 +21,7 @@ dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL
 
 GitHub Push komutlari:
 
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 .\scripts\backup.ps1
 git add .
 git commit -m "update db snapshot"
