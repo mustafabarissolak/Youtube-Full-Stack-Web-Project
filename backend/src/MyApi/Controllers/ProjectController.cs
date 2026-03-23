@@ -1,18 +1,18 @@
 using Microsoft.AspNetCore.Mvc;
 using MyApi.Managers.Abstracts;
-using MyApi.Models.DTOs.SkillDtos;
+using MyApi.Models.DTOs.ProjectDtos;
 
 namespace MyApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class SkillController : ControllerBase
+public class ProjectController : ControllerBase
 {
-    private readonly ISkillManager _manager;
+    private readonly IProjectManager _projectManager;
 
-    public SkillController(ISkillManager manager)
+    public ProjectController(IProjectManager projectManager)
     {
-        _manager = manager;
+        _projectManager = projectManager;
     }
 
     [HttpGet("get-all-for-ui")]
@@ -20,8 +20,8 @@ public class SkillController : ControllerBase
     {
         try
         {
-            var skills = await _manager.GetAllForUiAsync();
-            return Ok(skills);
+            var projects = await _projectManager.GetAllForUiAsync();
+            return Ok(projects);
         }
         catch (Exception ex)
         {
@@ -34,8 +34,8 @@ public class SkillController : ControllerBase
     {
         try
         {
-            var skills = await _manager.GetAllAsync();
-            return Ok(skills);
+            var projects = await _projectManager.GetAllAsync();
+            return Ok(projects);
         }
         catch (Exception ex)
         {
@@ -48,22 +48,22 @@ public class SkillController : ControllerBase
     {
         try
         {
-            var skill = await _manager.GetByIdAsync(id);
-            return Ok(skill);
+            var project = await _projectManager.GetByIdAsync(id);
+            return Ok(project);
         }
         catch (Exception ex)
         {
-            return NotFound(new { Message = ex.Message });
+            return BadRequest(new { Message = ex.Message });
         }
     }
 
     [HttpPost("create")]
-    public async Task<IActionResult> Create(CreateSkillDto dto)
+    public async Task<IActionResult> Create(CreateProjectDto dto)
     {
         try
         {
-            await _manager.CreateAsync(dto);
-            return Ok(new { Message = "Yetenek başarıyla eklendi." });
+            await _projectManager.CreateAsync(dto);
+            return Ok(new { Message = "Proje basariyla eklendi." });
         }
         catch (Exception ex)
         {
@@ -72,12 +72,12 @@ public class SkillController : ControllerBase
     }
 
     [HttpPut("update")]
-    public async Task<IActionResult> Update(UpdateSkillDto dto)
+    public async Task<IActionResult> Update(UpdateProjectDto dto)
     {
         try
         {
-            await _manager.UpdateAsync(dto);
-            return Ok(new { Message = "Yetenek başarıyla güncellendi." });
+            await _projectManager.UpdateAsync(dto);
+            return Ok(new { Message = "Proje basariyla guncellendi." });
         }
         catch (Exception ex)
         {
@@ -90,8 +90,8 @@ public class SkillController : ControllerBase
     {
         try
         {
-            await _manager.RemoveAsync(id);
-            return Ok(new { Message = "Yetenek başarıyla silindi." });
+            await _projectManager.RemoveByIdAsync(id);
+            return Ok(new { Message = "Proje basariyla silindi." });
         }
         catch (Exception ex)
         {

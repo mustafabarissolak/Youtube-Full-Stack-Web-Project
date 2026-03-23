@@ -85,8 +85,8 @@ public class AboutMeController : ControllerBase
         }
     }
 
-    [HttpDelete("remove/{id}")]
-    public async Task<IActionResult> Remove(string id)
+    [HttpDelete("delete-by-id/{id}")]
+    public async Task<IActionResult> Delete(string id)
     {
         try
         {

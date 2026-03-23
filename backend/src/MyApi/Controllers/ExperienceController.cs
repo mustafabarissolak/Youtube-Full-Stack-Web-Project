@@ -1,18 +1,18 @@
 using Microsoft.AspNetCore.Mvc;
 using MyApi.Managers.Abstracts;
-using MyApi.Models.DTOs.SkillDtos;
+using MyApi.Models.DTOs.ExperienceDtos;
 
 namespace MyApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class SkillController : ControllerBase
+public class ExperienceController : ControllerBase
 {
-    private readonly ISkillManager _manager;
+    private readonly IExperienceManager _experienceManager;
 
-    public SkillController(ISkillManager manager)
+    public ExperienceController(IExperienceManager experienceManager)
     {
-        _manager = manager;
+        _experienceManager = experienceManager;
     }
 
     [HttpGet("get-all-for-ui")]
@@ -20,22 +20,31 @@ public class SkillController : ControllerBase
     {
         try
         {
-            var skills = await _manager.GetAllForUiAsync();
-            return Ok(skills);
+            return Ok(await _experienceManager.GetAllForUiAsync());
         }
         catch (Exception ex)
         {
             return BadRequest(new { Message = ex.Message });
         }
     }
-
     [HttpGet("get-all")]
     public async Task<IActionResult> GetAll()
     {
         try
         {
-            var skills = await _manager.GetAllAsync();
-            return Ok(skills);
+            return Ok(await _experienceManager.GetAllAsync());
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
+    [HttpGet("get-by-id/{id}")]
+    public async Task<IActionResult> GetById(string id)
+    {
+        try
+        {
+            return Ok(await _experienceManager.GetByIdAsync(id));
         }
         catch (Exception ex)
         {
@@ -43,27 +52,13 @@ public class SkillController : ControllerBase
         }
     }
 
-    [HttpGet("get-by-id/{id}")]
-    public async Task<IActionResult> GetById(string id)
-    {
-        try
-        {
-            var skill = await _manager.GetByIdAsync(id);
-            return Ok(skill);
-        }
-        catch (Exception ex)
-        {
-            return NotFound(new { Message = ex.Message });
-        }
-    }
-
     [HttpPost("create")]
-    public async Task<IActionResult> Create(CreateSkillDto dto)
+    public async Task<IActionResult> Create(CreateExperienceDto dto)
     {
         try
         {
-            await _manager.CreateAsync(dto);
-            return Ok(new { Message = "Yetenek başarıyla eklendi." });
+            await _experienceManager.CreateAsync(dto);
+            return Ok("Deneyim basarıyla eklendi.");
         }
         catch (Exception ex)
         {
@@ -72,26 +67,25 @@ public class SkillController : ControllerBase
     }
 
     [HttpPut("update")]
-    public async Task<IActionResult> Update(UpdateSkillDto dto)
+    public async Task<IActionResult> Update(UpdateExperienceDto dto)
     {
         try
         {
-            await _manager.UpdateAsync(dto);
-            return Ok(new { Message = "Yetenek başarıyla güncellendi." });
+            await _experienceManager.UpdateAsync(dto);
+            return Ok("Deneyim basarıyla güncellendi.");
         }
         catch (Exception ex)
         {
             return BadRequest(new { Message = ex.Message });
         }
     }
-
     [HttpDelete("delete-by-id/{id}")]
     public async Task<IActionResult> Delete(string id)
     {
         try
         {
-            await _manager.RemoveAsync(id);
-            return Ok(new { Message = "Yetenek başarıyla silindi." });
+            await _experienceManager.RemoveByIdAsync(id);
+            return Ok("Deneyim basarıyla silindi.");
         }
         catch (Exception ex)
         {

@@ -18,8 +18,6 @@ public class SkillManager : ISkillManager
     {
         try
         {
-            // tracking: false -> RAM'i korur. 
-            // .Select -> Sadece gerekli kolonları DB'den çeker (CPU/Network dostu).
             return await _repository.GetAll(false)
                 .Select(s => new ResultSkillDto
                 {
@@ -99,8 +97,6 @@ public class SkillManager : ISkillManager
     {
         try
         {
-            // tracking: true (Varsayılan) -> EF Core nesneyi izlemeli ki 
-            // sadece değişen kolonları (Title, Value vb.) Update etsin.
             var existing = await _repository.GetByIdAsync(dto.Id);
 
             if (existing == null)
@@ -110,7 +106,6 @@ public class SkillManager : ISkillManager
             existing.Value = dto.Value;
             existing.UpdatedDate = DateTime.UtcNow;
 
-            // Update(existing) çağrısına gerek yok, SaveAsync değişikliği algılar.
             await _repository.SaveAsync();
         }
         catch (Exception ex)

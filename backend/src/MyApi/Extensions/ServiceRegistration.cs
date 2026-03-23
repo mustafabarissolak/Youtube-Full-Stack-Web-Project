@@ -20,6 +20,8 @@ public static class ServiceRegistration
         services.AddScoped<ISkillRepository, SkillRepository>();
         services.AddScoped<IEducationRepository, EducationRepository>();
         services.AddScoped<ILanguageRepository, LanguageRepository>();
+        services.AddScoped<IProjectRepository, ProjectRepository>();
+        services.AddScoped<IExperienceRepository, ExperienceRepository>();
         #endregion
 
         #region Managers
@@ -27,6 +29,8 @@ public static class ServiceRegistration
         services.AddScoped<ISkillManager, SkillManager>();
         services.AddScoped<IEducationManager, EducationManager>();
         services.AddScoped<ILanguageManager, LanguageManager>();
+        services.AddScoped<IProjectManager, ProjectManager>();
+        services.AddScoped<IExperienceManager, ExperienceManager>();
         #endregion
     }
 }

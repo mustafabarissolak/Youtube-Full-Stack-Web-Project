@@ -69,7 +69,7 @@ public class AboutMeManager : IAboutMeManager
         }
     }
 
-    public async Task<ResultAboutMeDto?> GetByIdAsync(string id)
+    public async Task<ResultAboutMeDto> GetByIdAsync(string id)
     {
         try
         {

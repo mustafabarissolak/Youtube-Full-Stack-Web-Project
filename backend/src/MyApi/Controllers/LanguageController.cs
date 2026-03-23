@@ -1,16 +1,16 @@
 using Microsoft.AspNetCore.Mvc;
 using MyApi.Managers.Abstracts;
-using MyApi.Models.DTOs.SkillDtos;
+using MyApi.Models.DTOs.LanguageDtos;
 
 namespace MyApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class SkillController : ControllerBase
+public class LanguageController : ControllerBase
 {
-    private readonly ISkillManager _manager;
+    private readonly ILanguageManager _manager;
 
-    public SkillController(ISkillManager manager)
+    public LanguageController(ILanguageManager manager)
     {
         _manager = manager;
     }
@@ -20,8 +20,7 @@ public class SkillController : ControllerBase
     {
         try
         {
-            var skills = await _manager.GetAllForUiAsync();
-            return Ok(skills);
+            return Ok(await _manager.GetAllForUiAsync());
         }
         catch (Exception ex)
         {
@@ -34,8 +33,7 @@ public class SkillController : ControllerBase
     {
         try
         {
-            var skills = await _manager.GetAllAsync();
-            return Ok(skills);
+            return Ok(await _manager.GetAllAsync());
         }
         catch (Exception ex)
         {
@@ -48,22 +46,21 @@ public class SkillController : ControllerBase
     {
         try
         {
-            var skill = await _manager.GetByIdAsync(id);
-            return Ok(skill);
+            return Ok(await _manager.GetByIdAsync(id));
         }
         catch (Exception ex)
         {
-            return NotFound(new { Message = ex.Message });
+            return BadRequest(new { Message = ex.Message });
         }
     }
 
     [HttpPost("create")]
-    public async Task<IActionResult> Create(CreateSkillDto dto)
+    public async Task<IActionResult> Create(CreateLanguageDto dto)
     {
         try
         {
             await _manager.CreateAsync(dto);
-            return Ok(new { Message = "Yetenek başarıyla eklendi." });
+            return Ok(new { Message = "Dil basariyla eklendi." });
         }
         catch (Exception ex)
         {
@@ -72,12 +69,12 @@ public class SkillController : ControllerBase
     }
 
     [HttpPut("update")]
-    public async Task<IActionResult> Update(UpdateSkillDto dto)
+    public async Task<IActionResult> Update(UpdateLanguageDto dto)
     {
         try
         {
             await _manager.UpdateAsync(dto);
-            return Ok(new { Message = "Yetenek başarıyla güncellendi." });
+            return Ok(new { Message = "Dil basariyla guncellendi." });
         }
         catch (Exception ex)
         {
@@ -91,9 +88,9 @@ public class SkillController : ControllerBase
         try
         {
             await _manager.RemoveAsync(id);
-            return Ok(new { Message = "Yetenek başarıyla silindi." });
+            return Ok(new { Message = "Dil basariyla silindi." });
         }
-        catch (Exception ex)
+        catch (System.Exception ex)
         {
             return BadRequest(new { Message = ex.Message });
         }

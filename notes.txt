@@ -1,22 +1,14 @@
 --------------------------- Genel
 
-hakkimda, 
-egitim, 
-deneyim, 
-projeler, 
-teknik yeterlilik,
-diller (tr- en ), 
-iletisim
-
+- git-github
+- validasyon (fluentvalidation) 
 - loglama
 - global hata yonetimi
-- validasyon (fluentvalidation) 
 - identitydb + jwt
 - cors
 - smtp mail
 - unit tests
 - docker (file ve compose)
-- git-github
 
 - nginx, docker, react, .net web api 
 
@@ -27,5 +19,3 @@ dotnet add package Microsoft.EntityFrameworkCore
 dotnet add package Microsoft.EntityFrameworkCore.Tools
 dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL
 
-- Repository Pattern (dto)
-- Managers 
