@@ -24,6 +24,6 @@ GitHub Push komutlari:
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 .\scripts\backup.ps1
 git add .
-git commit -m "update db snapshot"
+git commit -m "verileri kalici hale getirme calismasi"
 git push
  

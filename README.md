@@ -45,7 +45,7 @@ chmod +x scripts/*.sh
 
 git pull
 
-#### Windows
+#### Windows (PowerShell)
 
 .\scripts\restore.ps1
 
@@ -59,7 +59,7 @@ git pull
 
 docker compose down -v
 
-### Windows
+### Windows (PowerShell)
 
 .\scripts\restore.ps1
 
