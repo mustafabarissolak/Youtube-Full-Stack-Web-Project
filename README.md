@@ -20,6 +20,8 @@ cd Youtube-Full-Stack-Web-Project
 
 ### 🪟 Windows (PowerShell)
 
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+
 .\scripts\restore.ps1
 
 ### 🍏 Mac / 🐧 Linux
