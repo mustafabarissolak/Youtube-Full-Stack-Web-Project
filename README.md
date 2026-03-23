@@ -11,6 +11,7 @@
 Projeyi klonlayın:
 
 git clone https://github.com/mustafabarissolak/Youtube-Full-Stack-Web-Project.git
+
 cd Youtube-Full-Stack-Web-Project
 
 ---
