@@ -1,8 +1,8 @@
-Write-Host "🚀 Containerlar başlatılıyor..."
+Write-Host "Containerlar baslatiliyor..."
 
 docker compose up -d
 
-Write-Host "⏳ DB hazır olması bekleniyor..."
+Write-Host "DB hazir olmasi bekleniyor..."
 
 $ready = $false
 
@@ -15,8 +15,8 @@ while (-not $ready) {
     }
 }
 
-Write-Host "📥 Backup yükleniyor..."
+Write-Host "Backup yukleniyor..."
 
 Get-Content db/dumps/latest.sql | docker exec -i postgres_db psql -U website -d website_db
 
-Write-Host "✅ Database hazır!"
+Write-Host "Database hazir!"
