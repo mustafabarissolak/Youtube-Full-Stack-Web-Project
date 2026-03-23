@@ -26,3 +26,4 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 git add .
 git commit -m "update db snapshot"
 git push
+ 

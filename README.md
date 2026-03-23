@@ -1,14 +1,12 @@
-# 🚀 Full Stack Web Project
+# Full Stack Web Project
 
-## 🧰 Gereksinimler
+## Gereksinimler:
 
 * Docker
 
 ---
 
-## ⚙️ Kurulum
-
-Projeyi klonlayın:
+## Kurulum:
 
 git clone https://github.com/mustafabarissolak/Youtube-Full-Stack-Web-Project.git
 
@@ -16,22 +14,25 @@ cd Youtube-Full-Stack-Web-Project
 
 ---
 
-## ▶️ Projeyi başlatma
+## Projeyi başlatma:
 
-### 🪟 Windows (PowerShell)
+#### Windows (PowerShell)
+
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
 
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 
 .\scripts\restore.ps1
 
-### 🍏 Mac / 🐧 Linux
+#### Mac / Linux
 
 chmod +x scripts/*.sh
+
 ./scripts/restore.sh
 
 ---
 
-## 🧠 Bu ne yapar?
+## Bu ne yapar?
 
 * Docker containerlarını başlatır
 * En güncel veritabanı snapshot’unu yükler
@@ -39,39 +40,31 @@ chmod +x scripts/*.sh
 
 ---
 
-## 🔄 Güncel veriyi almak
+## 🔄 Güncel veriyi almak:
+
 
 git pull
 
-### Windows:
+#### Windows
 
 .\scripts\restore.ps1
 
-### Mac/Linux:
+#### Mac/Linux
 
 ./scripts/restore.sh
 
 ---
 
-## 🛑 Veritabanını sıfırlamak
+## Veritabanını sıfırlamak:
 
 docker compose down -v
 
-### Windows:
+### Windows
 
 .\scripts\restore.ps1
 
-### Mac/Linux:
+### Mac/Linux
 
 ./scripts/restore.sh
 
 ---
-
-## 👨‍💻 Geliştirici Notu
-
-Bu projede veritabanı senkronizasyonu için:
-
-* Gerçek zamanlı DB yerine
-* Snapshot (SQL dump) yaklaşımı kullanılmıştır
-
-Bu sayede herkes aynı veri ile projeyi çalıştırabilir.
