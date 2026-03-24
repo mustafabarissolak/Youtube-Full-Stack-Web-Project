@@ -1,7 +1,8 @@
 --------------------------- Genel
 
-- git-github
-- validasyon (fluentvalidation) 
++ git-github
+- validasyon (FluentValidation) 
+- mapping (AutoMapper) 
 - loglama
 - global hata yonetimi
 - identitydb + jwt
@@ -18,12 +19,15 @@ Paketler:
 dotnet add package Microsoft.EntityFrameworkCore 
 dotnet add package Microsoft.EntityFrameworkCore.Tools
 dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL
+dotnet add package FluentValidation.AspNetCore
+dotnet add package AutoMapper.Extensions.Microsoft.DependencyInjection
 
-GitHub Push komutlari:
+
+-----GitHub Push komutlari:
 
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 .\scripts\backup.ps1
 git add .
-git commit -m "verileri kalici hale getirme calismasi"
+git commit -m "AutoMapper, FluentValidation, Managers and Controllers update part-1"
 git push
  

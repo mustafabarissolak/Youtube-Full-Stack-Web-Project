@@ -17,85 +17,34 @@ public class SkillController : ControllerBase
 
     [HttpGet("get-all-for-ui")]
     public async Task<IActionResult> GetAllForUi()
-    {
-        try
-        {
-            var skills = await _manager.GetAllForUiAsync();
-            return Ok(skills);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
-    }
+        => Ok(await _manager.GetAllForUiAsync());
 
     [HttpGet("get-all")]
     public async Task<IActionResult> GetAll()
-    {
-        try
-        {
-            var skills = await _manager.GetAllAsync();
-            return Ok(skills);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
-    }
+            => Ok(await _manager.GetAllAsync());
 
     [HttpGet("get-by-id/{id}")]
     public async Task<IActionResult> GetById(string id)
-    {
-        try
-        {
-            var skill = await _manager.GetByIdAsync(id);
-            return Ok(skill);
-        }
-        catch (Exception ex)
-        {
-            return NotFound(new { Message = ex.Message });
-        }
-    }
+            => Ok(await _manager.GetByIdAsync(id));
 
     [HttpPost("create")]
     public async Task<IActionResult> Create(CreateSkillDto dto)
     {
-        try
-        {
-            await _manager.CreateAsync(dto);
-            return Ok(new { Message = "Yetenek başarıyla eklendi." });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
+        await _manager.CreateAsync(dto);
+        return Ok(new { Message = "Beceri başarıyla eklendi." });
     }
 
     [HttpPut("update")]
     public async Task<IActionResult> Update(UpdateSkillDto dto)
     {
-        try
-        {
-            await _manager.UpdateAsync(dto);
-            return Ok(new { Message = "Yetenek başarıyla güncellendi." });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
+        await _manager.UpdateAsync(dto);
+        return Ok(new { Message = "Beceri başarıyla güncellendi." });
     }
 
     [HttpDelete("delete-by-id/{id}")]
     public async Task<IActionResult> Delete(string id)
     {
-        try
-        {
-            await _manager.RemoveAsync(id);
-            return Ok(new { Message = "Yetenek başarıyla silindi." });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
+        await _manager.RemoveAsync(id);
+        return Ok(new { Message = "Beceri başarıyla silindi." });
     }
 }

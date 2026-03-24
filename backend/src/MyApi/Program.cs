@@ -1,13 +1,29 @@
 using Microsoft.OpenApi.Models;
 using MyApi.Extensions;
 
-var builder = WebApplication.CreateBuilder(args); // Uygulamanın yapılandırıcısını başlatır (Ayarlar, Servisler burada toplanır).
+var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddApplicationServices(builder.Configuration);
-
-// [Controller Desteği]
-// Minimal API yerine [ApiController] attribute'u kullanılan sınıfları (Controllers klasörü) tanımasını sağlar.
 builder.Services.AddControllers();
+
+#region Ozel validation formati (opsiyonel)
+// builder.Services.AddControllers()
+//     .ConfigureApiBehaviorOptions(options =>
+//     {
+//         options.InvalidModelStateResponseFactory = context =>
+//         {
+//             var errors = context.ModelState
+//                 .Where(x => x.Value.Errors.Count > 0)
+//                 .Select(x => new
+//                 {
+//                     Field = x.Key,
+//                     Errors = x.Value.Errors.Select(e => e.ErrorMessage)
+//                 });
+
+//             return new BadRequestObjectResult(errors);
+//         };
+//     });
+#endregion
 
 // [CORS (Cross-Origin Resource Sharing)]
 // Tarayıcı güvenliği nedeniyle, farklı bir adresten (örn: localhost:3000'deki React projen) 

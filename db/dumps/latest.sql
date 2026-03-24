@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict QmeOPgb3UgDRckgpCnxLys9YFjjL9iOUFfaqUGsaFMabDuAEEAbIcyNALxg4RpH
+\restrict rgwXvwpYGcP6TNOXhuEErSDVizXyXfLawtQsNZsYbwI9sJlLWEFsMcS71UA27GU
 
 -- Dumped from database version 15.17
 -- Dumped by pg_dump version 15.17
@@ -199,6 +199,7 @@ COPY public."Languages" ("Id", "Name", "Description", "CreatedDate", "UpdatedDat
 --
 
 COPY public."ProjectDescriptions" ("Id", "ProjectId", "Value", "CreatedDate", "UpdatedDate") FROM stdin;
+019d2022-cdac-7f81-92eb-d673d41b5313	ac3121f2-e7f6-4b05-a521-173c05b247f9	strasdasding	2026-03-24 13:57:25.025454+00	\N
 \.
 
 
@@ -207,6 +208,7 @@ COPY public."ProjectDescriptions" ("Id", "ProjectId", "Value", "CreatedDate", "U
 --
 
 COPY public."Projects" ("Id", "Title", "CreatedDate", "UpdatedDate") FROM stdin;
+ac3121f2-e7f6-4b05-a521-173c05b247f9	asdasd	2026-03-24 13:57:25.025531+00	\N
 \.
 
 
@@ -333,5 +335,5 @@ ALTER TABLE ONLY public."ProjectDescriptions"
 -- PostgreSQL database dump complete
 --
 
-\unrestrict QmeOPgb3UgDRckgpCnxLys9YFjjL9iOUFfaqUGsaFMabDuAEEAbIcyNALxg4RpH
+\unrestrict rgwXvwpYGcP6TNOXhuEErSDVizXyXfLawtQsNZsYbwI9sJlLWEFsMcS71UA27GU
 

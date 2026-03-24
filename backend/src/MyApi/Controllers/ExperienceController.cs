@@ -18,78 +18,42 @@ public class ExperienceController : ControllerBase
     [HttpGet("get-all-for-ui")]
     public async Task<IActionResult> GetAllForUi()
     {
-        try
-        {
-            return Ok(await _experienceManager.GetAllForUiAsync());
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
+        var Experiences = await _experienceManager.GetAllForUiAsync();
+        return Ok(Experiences);
     }
+
     [HttpGet("get-all")]
     public async Task<IActionResult> GetAll()
     {
-        try
-        {
-            return Ok(await _experienceManager.GetAllAsync());
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
+        var Experiences = await _experienceManager.GetAllAsync();
+        return Ok(Experiences);
     }
+
     [HttpGet("get-by-id/{id}")]
     public async Task<IActionResult> GetById(string id)
     {
-        try
-        {
-            return Ok(await _experienceManager.GetByIdAsync(id));
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
+        var Experience = await _experienceManager.GetByIdAsync(id);
+        return Ok(Experience);
     }
 
     [HttpPost("create")]
     public async Task<IActionResult> Create(CreateExperienceDto dto)
     {
-        try
-        {
-            await _experienceManager.CreateAsync(dto);
-            return Ok("Deneyim basarıyla eklendi.");
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
+        await _experienceManager.CreateAsync(dto);
+        return Ok(new { Message = "Deneyim basariyla eklendi." });
     }
 
     [HttpPut("update")]
     public async Task<IActionResult> Update(UpdateExperienceDto dto)
     {
-        try
-        {
-            await _experienceManager.UpdateAsync(dto);
-            return Ok("Deneyim basarıyla güncellendi.");
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
+        await _experienceManager.UpdateAsync(dto);
+        return Ok(new { Message = "Deneyim basariyla guncellendi." });
     }
+
     [HttpDelete("delete-by-id/{id}")]
     public async Task<IActionResult> Delete(string id)
     {
-        try
-        {
-            await _experienceManager.RemoveByIdAsync(id);
-            return Ok("Deneyim basarıyla silindi.");
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
+        await _experienceManager.RemoveByIdAsync(id);
+        return Ok(new { Message = "Deneyim basariyla silindi." });
     }
 }

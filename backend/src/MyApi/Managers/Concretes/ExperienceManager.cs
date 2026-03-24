@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using MyApi.Managers.Abstracts;
 using MyApi.Models.DTOs.ExperienceDtos;
@@ -9,144 +10,83 @@ namespace MyApi.Managers.Concretes;
 public class ExperienceManager : IExperienceManager
 {
     private readonly IExperienceRepository _experienceRepository;
+    private readonly IMapper _mapper;
 
-    public ExperienceManager(IExperienceRepository experienceRepository)
+    public ExperienceManager(IExperienceRepository experienceRepository, IMapper mapper)
     {
         _experienceRepository = experienceRepository;
-    }
-
-    public async Task CreateAsync(CreateExperienceDto dto)
-    {
-        try
-        {
-            await _experienceRepository.AddAsync(new()
-            {
-                Title = dto.Title,
-                CreatedDate = DateTime.UtcNow,
-                Descriptions = dto.Descriptions
-                 .Select(x => new ExperienceDescription()
-                 {
-                     Value = x,
-                 }).ToList()
-            });
-            await _experienceRepository.SaveAsync();
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Deneyim bilgileri eklenirken bir hata oluştu. Mesaj: {ex.Message}");
-        }
+        _mapper = mapper;
     }
 
     public async Task<List<ResultExperienceDto>> GetAllAsync()
     {
-        try
-        {
-            return await _experienceRepository.GetAll()
-                .Include(x => x.Descriptions)
-                .Select(e => new ResultExperienceDto
-                {
-                    Id = e.Id,
-                    CreatedDate = e.CreatedDate,
-                    UpdatedDate = e.UpdatedDate,
-                    Title = e.Title,
-                    Descriptions = e.Descriptions
-                        .Select(x => x.Value)
-                        .ToList()
-                }).ToListAsync();
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Deneyim bilgileri listelenirken bir hata oluştu. {ex.Message}");
-        }
+        var experiences = await _experienceRepository.GetAll(tracking: false)
+            .Include(x => x.Descriptions)
+            .ToListAsync();
+
+        return _mapper.Map<List<ResultExperienceDto>>(experiences);
     }
 
-    public Task<List<ResultExperienceForUiDto>> GetAllForUiAsync()
+    public async Task<List<ResultExperienceForUiDto>> GetAllForUiAsync()
     {
-        try
-        {
-            return _experienceRepository.GetAll()
-                 .Include(x => x.Descriptions)
-                 .Select(e => new ResultExperienceForUiDto
-                 {
-                     Title = e.Title,
-                     Descriptions = e.Descriptions
-                         .Select(x => x.Value)
-                         .ToList()
-                 }).ToListAsync();
-        }
-        catch (System.Exception ex)
-        {
-            throw new Exception($"Deneyim bilgileri listelenirken bir hata oluştu. {ex.Message}");
-        }
+        var experiences = await _experienceRepository.GetAll(tracking: false)
+            .Include(x => x.Descriptions)
+            .ToListAsync();
+
+        return _mapper.Map<List<ResultExperienceForUiDto>>(experiences);
     }
 
     public async Task<ResultExperienceDto> GetByIdAsync(string id)
     {
-        try
-        {
-            return await _experienceRepository.GetAll()
-                .Where(x => x.Id == Guid.Parse(id))
-                .Include(x => x.Descriptions)
-                .Select(e => new ResultExperienceDto
-                {
-                    Id = e.Id,
-                    CreatedDate = e.CreatedDate,
-                    UpdatedDate = e.UpdatedDate,
-                    Title = e.Title,
-                    Descriptions = e.Descriptions
-                         .Select(x => x.Value)
-                         .ToList()
-                }).FirstOrDefaultAsync();
-        }
-        catch (System.Exception ex)
-        {
-            throw new Exception($"Deneyim bilgisi getirilirken bir hata oluştu. {ex.Message}");
-        }
+        var experience = await _experienceRepository.GetAll(tracking: false)
+             .Include(x => x.Descriptions)
+             .FirstOrDefaultAsync(x => x.Id == Guid.Parse(id));
+        if (experience == null)
+            throw new KeyNotFoundException("Deneyim bulunamadı.");
+
+        return _mapper.Map<ResultExperienceDto>(experience);
     }
 
-    public async Task RemoveByIdAsync(string id)
+    public async Task CreateAsync(CreateExperienceDto dto)
     {
-        try
-        {
-            var experience = await _experienceRepository.GetByIdAsync(Guid.Parse(id));
-            if (experience is null)
-                throw new Exception("Deneyim bilgisi bulunamadı.");
-            _experienceRepository.Remove(experience);
-            await _experienceRepository.SaveAsync();
-        }
-        catch (System.Exception ex)
-        {
-            throw new Exception($"Deneyim bilgisi silinirken bir hata oluştu. {ex.Message}");
-        }
+        var experience = _mapper.Map<Experience>(dto);
+
+        experience.CreatedDate = DateTime.UtcNow;
+
+        await _experienceRepository.AddAsync(experience);
+        await _experienceRepository.SaveAsync();
     }
 
     public async Task UpdateAsync(UpdateExperienceDto dto)
     {
-        try
+        var experience = await _experienceRepository.GetAll()
+                .Include(x => x.Descriptions)
+                .FirstOrDefaultAsync(x => x.Id == dto.Id);
+
+        _mapper.Map(dto, experience);
+        if (experience == null)
+            throw new KeyNotFoundException("Deneyim bulunamadı.");
+        experience.UpdatedDate = DateTime.UtcNow;
+        experience.Descriptions.Clear();
+        foreach (var item in dto.Descriptions)
         {
-            var experience = await _experienceRepository.GetAll().Include(e => e.Descriptions).FirstOrDefaultAsync(x => x.Id == dto.Id);
-            if (experience is null)
-                throw new Exception("Deneyim bilgisi bulunamadı.");
-
-            experience.Title = dto.Title;
-            experience.UpdatedDate = DateTime.UtcNow;
-
-            experience.Descriptions.Clear();
-            foreach (var description in dto.Descriptions)
+            experience.Descriptions.Add(new ExperienceDescription
             {
-                experience.Descriptions.Add(new ExperienceDescription
-                {
-                    Value = description,
-                    CreatedDate = DateTime.UtcNow
-                });
-            }
+                Value = item,
+                CreatedDate = DateTime.UtcNow
+            });
+        }
 
-            await _experienceRepository.SaveAsync();
-        }
-        catch (System.Exception ex)
-        {
-            throw new Exception($"Deneyim bilgisi güncellenirken bir hata oluştu. {ex.Message}");
-        }
+        _experienceRepository.Update(experience);
+        await _experienceRepository.SaveAsync();
     }
 
+    public async Task RemoveByIdAsync(string id)
+    {
+        var experience = await _experienceRepository.GetByIdAsync(Guid.Parse(id));
+        if (experience == null)
+            throw new KeyNotFoundException("Deneyim bulunamadı.");
+        _experienceRepository.Remove(experience);
+        await _experienceRepository.SaveAsync();
+    }
 }

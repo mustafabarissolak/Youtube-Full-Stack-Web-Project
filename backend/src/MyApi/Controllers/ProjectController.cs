@@ -18,84 +18,42 @@ public class ProjectController : ControllerBase
     [HttpGet("get-all-for-ui")]
     public async Task<IActionResult> GetAllForUi()
     {
-        try
-        {
-            var projects = await _projectManager.GetAllForUiAsync();
-            return Ok(projects);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
+        var projects = await _projectManager.GetAllForUiAsync();
+        return Ok(projects);
     }
 
     [HttpGet("get-all")]
     public async Task<IActionResult> GetAll()
     {
-        try
-        {
-            var projects = await _projectManager.GetAllAsync();
-            return Ok(projects);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
+        var projects = await _projectManager.GetAllAsync();
+        return Ok(projects);
     }
 
     [HttpGet("get-by-id/{id}")]
     public async Task<IActionResult> GetById(string id)
     {
-        try
-        {
-            var project = await _projectManager.GetByIdAsync(id);
-            return Ok(project);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
+        var project = await _projectManager.GetByIdAsync(id);
+        return Ok(project);
     }
 
     [HttpPost("create")]
     public async Task<IActionResult> Create(CreateProjectDto dto)
     {
-        try
-        {
-            await _projectManager.CreateAsync(dto);
-            return Ok(new { Message = "Proje basariyla eklendi." });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
+        await _projectManager.CreateAsync(dto);
+        return Ok(new { Message = "Proje basariyla eklendi." });
     }
 
     [HttpPut("update")]
     public async Task<IActionResult> Update(UpdateProjectDto dto)
     {
-        try
-        {
-            await _projectManager.UpdateAsync(dto);
-            return Ok(new { Message = "Proje basariyla guncellendi." });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
+        await _projectManager.UpdateAsync(dto);
+        return Ok(new { Message = "Proje basariyla guncellendi." });
     }
 
     [HttpDelete("delete-by-id/{id}")]
     public async Task<IActionResult> Delete(string id)
     {
-        try
-        {
-            await _projectManager.RemoveByIdAsync(id);
-            return Ok(new { Message = "Proje basariyla silindi." });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
+        await _projectManager.RemoveByIdAsync(id);
+        return Ok(new { Message = "Proje basariyla silindi." });
     }
 }

@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using MyApi.Managers.Abstracts;
 using MyApi.Models.DTOs.ProjectDtos;
@@ -9,147 +10,81 @@ namespace MyApi.Managers.Concretes;
 public class ProjectManager : IProjectManager
 {
     private readonly IProjectRepository _projectRepository;
+    private readonly IMapper _mapper;
 
-    public ProjectManager(IProjectRepository projectRepository)
+    public ProjectManager(IProjectRepository projectRepository, IMapper mapper)
     {
         _projectRepository = projectRepository;
-    }
-
-
-    public async Task CreateAsync(CreateProjectDto dto)
-    {
-        try
-        {
-            await _projectRepository.AddAsync(new()
-            {
-                Title = dto.Title,
-                CreatedDate = DateTime.UtcNow,
-                Descriptions = dto.Descriptions
-            .Select(x => new ProjectDescription()
-            {
-                Value = x,
-            }).ToList()
-            });
-            await _projectRepository.SaveAsync();
-        }
-        catch (System.Exception ex)
-        {
-            throw new Exception($"Proje eklenirken bir hata oluştu. Mesaj: {ex.Message}");
-        }
+        _mapper = mapper;
     }
 
     public async Task<List<ResultProjectDto>> GetAllAsync()
     {
-        try
-        {
-            return await _projectRepository.GetAll()
-                   .Include(x => x.Descriptions)
-                   .Select(p => new ResultProjectDto
-                   {
-                       Id = p.Id,
-                       CreatedDate = p.CreatedDate,
-                       UpdatedDate = p.UpdatedDate,
-                       Title = p.Title,
-                       Descriptions = p.Descriptions
-                           .Select(x => x.Value)
-                           .ToList()
-                   }).ToListAsync();
-        }
-        catch (System.Exception ex)
-        {
-            throw new Exception($"Proje listesi getirilirken bir hata oluştu. Mesaj: {ex.Message}");
-        }
+        var projects = await _projectRepository.GetAll(tracking: false)
+            .Include(x => x.Descriptions)
+            .ToListAsync();
+
+        return _mapper.Map<List<ResultProjectDto>>(projects);
     }
 
-    public Task<List<ResultProjectForUiDto>> GetAllForUiAsync()
+    public async Task<List<ResultProjectForUiDto>> GetAllForUiAsync()
     {
-        try
-        {
-            return _projectRepository.GetAll()
-                 .Include(x => x.Descriptions)
-                 .Select(p => new ResultProjectForUiDto
-                 {
-                     Title = p.Title,
-                     Descriptions = p.Descriptions
-                         .Select(x => x.Value)
-                         .ToList()
-                 }).ToListAsync();
-        }
-        catch (System.Exception ex)
-        {
-            throw new Exception($"Proje listesi getirilirken bir hata oluştu. Mesaj: {ex.Message}");
-        }
+        var projects = await _projectRepository.GetAll(tracking: false)
+            .Include(x => x.Descriptions)
+            .ToListAsync();
+
+        return _mapper.Map<List<ResultProjectForUiDto>>(projects);
     }
 
-    public Task<ResultProjectDto> GetByIdAsync(string id)
+    public async Task<ResultProjectDto> GetByIdAsync(string id)
     {
-        try
-        {
-            return _projectRepository.GetAll()
-                .Include(x => x.Descriptions)
-                .Where(x => x.Id == Guid.Parse(id))
-                .Select(p => new ResultProjectDto
-                {
-                    Id = p.Id,
-                    CreatedDate = p.CreatedDate,
-                    UpdatedDate = p.UpdatedDate,
-                    Title = p.Title,
-                    Descriptions = p.Descriptions
-                        .Select(x => x.Value)
-                        .ToList()
-                }).FirstOrDefaultAsync();
-        }
-        catch (System.Exception ex)
-        {
-            throw new Exception($"Proje getirilirken bir hata oluştu. Mesaj: {ex.Message}");
-        }
+        var project = await _projectRepository.GetAll(tracking: false)
+            .Include(x => x.Descriptions)
+            .FirstOrDefaultAsync(x => x.Id == Guid.Parse(id));
+        if (project == null)
+            throw new KeyNotFoundException("Proje bulunamadı.");
+        return _mapper.Map<ResultProjectDto>(project);
     }
 
-    public async Task RemoveByIdAsync(string id)
+    public async Task CreateAsync(CreateProjectDto dto)
     {
-        try
-        {
-            var project = await _projectRepository.GetByIdAsync(Guid.Parse(id));
-            _projectRepository.Remove(project!);
-            await _projectRepository.SaveAsync();
-        }
-        catch (System.Exception ex)
-        {
-            throw new Exception($"Proje silinirken bir hata oluştu. Mesaj: {ex.Message}");
-        }
+        var project = _mapper.Map<Project>(dto);
+
+        project.CreatedDate = DateTime.UtcNow;
+
+        await _projectRepository.AddAsync(project);
+        await _projectRepository.SaveAsync();
     }
 
     public async Task UpdateAsync(UpdateProjectDto dto)
     {
-        try
+        var project = await _projectRepository.GetAll()
+                .Include(x => x.Descriptions)
+                .FirstOrDefaultAsync(x => x.Id == dto.Id);
+
+        if (project == null)
+            throw new KeyNotFoundException("Proje bulunamadı.");
+
+        _mapper.Map(dto, project);
+        project.UpdatedDate = DateTime.UtcNow;
+        project.Descriptions.Clear();
+        foreach (var item in dto.Descriptions)
         {
-            var project = await _projectRepository
-            .GetAll()
-            .Include(x => x.Descriptions)
-            .FirstOrDefaultAsync(x => x.Id == dto.Id);
-
-            if (project == null)
-                throw new Exception("Project not found");
-
-            project.Title = dto.Title;
-            project.UpdatedDate = DateTime.UtcNow;
-
-            project.Descriptions.Clear();
-
-            foreach (var item in dto.Descriptions)
+            project.Descriptions.Add(new ProjectDescription
             {
-                project.Descriptions.Add(new ProjectDescription
-                {
-                    Value = item,
-                    CreatedDate = DateTime.UtcNow
-                });
-            }
+                Value = item,
+                CreatedDate = DateTime.UtcNow
+            });
+        }
+        await _projectRepository.SaveAsync();
+    }
 
-            await _projectRepository.SaveAsync();
-        }
-        catch (System.Exception ex)
-        {
-            throw new Exception($"Proje güncellenirken bir hata oluştu. Mesaj: {ex.Message}");
-        }
+    public async Task RemoveByIdAsync(string id)
+    {
+        var project = await _projectRepository.GetByIdAsync(Guid.Parse(id));
+        if (project == null)
+            throw new KeyNotFoundException("Proje bulunamadı.");
+        _projectRepository.Remove(project);
+        await _projectRepository.SaveAsync();
     }
 }
