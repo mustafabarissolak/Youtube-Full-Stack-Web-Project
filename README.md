@@ -18,8 +18,6 @@ cd Youtube-Full-Stack-Web-Project
 
 #### Windows (PowerShell)
 
-Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
-
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 
 .\scripts\restore.ps1
@@ -40,7 +38,7 @@ chmod +x scripts/*.sh
 
 ---
 
-## 🔄 Güncel veriyi almak:
+## Güncel veriyi almak:
 
 
 git pull
