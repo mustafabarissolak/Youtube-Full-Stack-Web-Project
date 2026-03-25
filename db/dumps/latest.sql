@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict rgwXvwpYGcP6TNOXhuEErSDVizXyXfLawtQsNZsYbwI9sJlLWEFsMcS71UA27GU
+\restrict m0mOgSRWRsDSjn0QRBE9t9EnqRspn4j4hc0r3AMxhfXzaxFrdD5JLIrHpCZhZxr
 
 -- Dumped from database version 15.17
 -- Dumped by pg_dump version 15.17
@@ -155,6 +155,22 @@ CREATE TABLE public."__EFMigrationsHistory" (
 ALTER TABLE public."__EFMigrationsHistory" OWNER TO website;
 
 --
+-- Name: logs; Type: TABLE; Schema: public; Owner: website
+--
+
+CREATE TABLE public.logs (
+    message text,
+    message_template text,
+    level integer,
+    "timestamp" timestamp without time zone,
+    exception text,
+    log_event jsonb
+);
+
+
+ALTER TABLE public.logs OWNER TO website;
+
+--
 -- Data for Name: AboutsMe; Type: TABLE DATA; Schema: public; Owner: website
 --
 
@@ -199,7 +215,6 @@ COPY public."Languages" ("Id", "Name", "Description", "CreatedDate", "UpdatedDat
 --
 
 COPY public."ProjectDescriptions" ("Id", "ProjectId", "Value", "CreatedDate", "UpdatedDate") FROM stdin;
-019d2022-cdac-7f81-92eb-d673d41b5313	ac3121f2-e7f6-4b05-a521-173c05b247f9	strasdasding	2026-03-24 13:57:25.025454+00	\N
 \.
 
 
@@ -208,7 +223,6 @@ COPY public."ProjectDescriptions" ("Id", "ProjectId", "Value", "CreatedDate", "U
 --
 
 COPY public."Projects" ("Id", "Title", "CreatedDate", "UpdatedDate") FROM stdin;
-ac3121f2-e7f6-4b05-a521-173c05b247f9	asdasd	2026-03-24 13:57:25.025531+00	\N
 \.
 
 
@@ -226,6 +240,14 @@ COPY public."Skills" ("Id", "Name", "Value", "CreatedDate", "UpdatedDate") FROM 
 
 COPY public."__EFMigrationsHistory" ("MigrationId", "ProductVersion") FROM stdin;
 20260323190238_NewPcInitCreate	10.0.4
+\.
+
+
+--
+-- Data for Name: logs; Type: TABLE DATA; Schema: public; Owner: website
+--
+
+COPY public.logs (message, message_template, level, "timestamp", exception, log_event) FROM stdin;
 \.
 
 
@@ -335,5 +357,5 @@ ALTER TABLE ONLY public."ProjectDescriptions"
 -- PostgreSQL database dump complete
 --
 
-\unrestrict rgwXvwpYGcP6TNOXhuEErSDVizXyXfLawtQsNZsYbwI9sJlLWEFsMcS71UA27GU
+\unrestrict m0mOgSRWRsDSjn0QRBE9t9EnqRspn4j4hc0r3AMxhfXzaxFrdD5JLIrHpCZhZxr
 

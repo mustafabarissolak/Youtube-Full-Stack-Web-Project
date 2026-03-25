@@ -8,8 +8,8 @@ using MyApi.Mappings;
 using MyApi.Repositories;
 using MyApi.Repositories.Abstracts;
 using MyApi.Repositories.Concretes;
-using MyApi.Validators.ProjectValidators;
 using MyApi.Validators.ExperienceValidators;
+using MyApi.Validators.ProjectValidators;
 
 namespace MyApi.Extensions;
 
@@ -51,7 +51,6 @@ public static class ServiceRegistration
         services.AddValidatorsFromAssemblyContaining<RemoveExperienceByIdValidator>();
 
         #endregion
-
 
     }
 }

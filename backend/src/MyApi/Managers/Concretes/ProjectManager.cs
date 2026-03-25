@@ -1,5 +1,6 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using MyApi.Exceptions;
 using MyApi.Managers.Abstracts;
 using MyApi.Models.DTOs.ProjectDtos;
 using MyApi.Models.Entities;
@@ -11,11 +12,13 @@ public class ProjectManager : IProjectManager
 {
     private readonly IProjectRepository _projectRepository;
     private readonly IMapper _mapper;
+    private readonly ILogger<ProjectManager> _logger;
 
-    public ProjectManager(IProjectRepository projectRepository, IMapper mapper)
+    public ProjectManager(IProjectRepository projectRepository, IMapper mapper, ILogger<ProjectManager> logger)
     {
         _projectRepository = projectRepository;
         _mapper = mapper;
+        _logger = logger;
     }
 
     public async Task<List<ResultProjectDto>> GetAllAsync()
@@ -41,17 +44,17 @@ public class ProjectManager : IProjectManager
         var project = await _projectRepository.GetAll(tracking: false)
             .Include(x => x.Descriptions)
             .FirstOrDefaultAsync(x => x.Id == Guid.Parse(id));
+
         if (project == null)
-            throw new KeyNotFoundException("Proje bulunamadı.");
+            throw new NotFoundException("Proje bulunamadı.");
+
         return _mapper.Map<ResultProjectDto>(project);
     }
 
     public async Task CreateAsync(CreateProjectDto dto)
     {
         var project = _mapper.Map<Project>(dto);
-
         project.CreatedDate = DateTime.UtcNow;
-
         await _projectRepository.AddAsync(project);
         await _projectRepository.SaveAsync();
     }
@@ -63,7 +66,7 @@ public class ProjectManager : IProjectManager
                 .FirstOrDefaultAsync(x => x.Id == dto.Id);
 
         if (project == null)
-            throw new KeyNotFoundException("Proje bulunamadı.");
+            throw new NotFoundException("Proje bulunamadı.");
 
         _mapper.Map(dto, project);
         project.UpdatedDate = DateTime.UtcNow;
@@ -82,8 +85,10 @@ public class ProjectManager : IProjectManager
     public async Task RemoveByIdAsync(string id)
     {
         var project = await _projectRepository.GetByIdAsync(Guid.Parse(id));
+
         if (project == null)
-            throw new KeyNotFoundException("Proje bulunamadı.");
+            throw new NotFoundException("Proje bulunamadı.");
+
         _projectRepository.Remove(project);
         await _projectRepository.SaveAsync();
     }

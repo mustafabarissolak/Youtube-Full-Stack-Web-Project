@@ -21,6 +21,10 @@ dotnet add package Microsoft.EntityFrameworkCore.Tools
 dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL
 dotnet add package FluentValidation.AspNetCore
 dotnet add package AutoMapper.Extensions.Microsoft.DependencyInjection
+dotnet add package Serilog.AspNetCore
+dotnet add package Serilog.Sinks.Console
+dotnet add package Serilog.Sinks.PostgreSQL
+dotnet add package Serilog.Settings.Configuration
 
 
 -----GitHub Push komutlari:

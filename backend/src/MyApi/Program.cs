@@ -1,29 +1,42 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using MyApi.Extensions;
+using MyApi.Middlewares;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Serilog config
+builder.Host.UseSerilog((context, services, configuration) =>
+{
+    configuration
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext();
+});
+
 builder.Services.AddApplicationServices(builder.Configuration);
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        options.InvalidModelStateResponseFactory = context =>
+        {
+            var errors = context.ModelState
+                .Where(x => x.Value!.Errors.Count > 0)
+                .Select(x => new
+                {
+                    Field = x.Key,
+                    Errors = x.Value!.Errors.Select(e => e.ErrorMessage)
+                });
 
-#region Ozel validation formati (opsiyonel)
-// builder.Services.AddControllers()
-//     .ConfigureApiBehaviorOptions(options =>
-//     {
-//         options.InvalidModelStateResponseFactory = context =>
-//         {
-//             var errors = context.ModelState
-//                 .Where(x => x.Value.Errors.Count > 0)
-//                 .Select(x => new
-//                 {
-//                     Field = x.Key,
-//                     Errors = x.Value.Errors.Select(e => e.ErrorMessage)
-//                 });
+            return new BadRequestObjectResult(new
+            {
+                Message = "Validation hatası",
+                Errors = errors
+            });
+        };
+    });
 
-//             return new BadRequestObjectResult(errors);
-//         };
-//     });
-#endregion
 
 // [CORS (Cross-Origin Resource Sharing)]
 // Tarayıcı güvenliği nedeniyle, farklı bir adresten (örn: localhost:3000'deki React projen) 
@@ -81,45 +94,26 @@ builder.Services.AddSwaggerGen(options =>
 // --- AYARLAR BİTTİ, UYGULAMAYI İNŞA ET ---
 var app = builder.Build();
 
-// --- 2. MIDDLEWARE HATTI (İŞLEM SIRASI KRİTİKTİR!) ---
-// Gelen her HTTP isteği bu sırayla aşağıdaki süzgeçlerden geçer.
-
-// [Geliştirme Ortamı Kontrolü]
-// Swagger'ın sadece biz kod yazarken (Development) çalışmasını, canlı ortamda (Production) gizlenmesini sağlar.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger(); // Swagger JSON dosyasını oluşturur.
+    app.UseSwagger();
     app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
-        options.RoutePrefix = string.Empty; // API'yi başlattığında doğrudan Swagger sayfası açılır (localhost:5000/ gibi).
+        options.RoutePrefix = string.Empty;
     });
 }
 
-// [Güvenli Bağlantı]
-// Eğer HTTP üzerinden istek gelirse, otomatik olarak HTTPS'e yönlendirir.
-app.UseHttpsRedirection();
+app.UseSerilogRequestLogging();
+app.UseMiddleware<GlobalExceptionMiddleware>();
 
-// [Statik Dosyalar]
-// wwwroot klasörü içindeki resim (.jpg, .png), PDF (CV gibi) veya JS dosyalarına 
-// dış dünyadan (URL üzerinden) erişilmesini sağlar.
+app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-// [CORS Uygula]
-// Yukarıda tanımladığımız "AllowAll" kuralını devreye sokar. Auth'dan önce gelmelidir.
 app.UseCors("AllowAll");
 
-// [Kimlik Doğrulama (Authentication)]
-// Gelen isteğin içindeki Token geçerli mi? "Sen kimsin?" sorusuna yanıt arar.
 app.UseAuthentication();
-
-// [Yetkilendirme (Authorization)]
-// "Senin buraya girmeye yetkin var mı?" (Admin mi, User mı?) sorusuna bakar.
 app.UseAuthorization();
 
-// [Rota Eşleme]
-// Gelen isteği, Controllers klasöründeki uygun metotla (Action) eşleştirir.
 app.MapControllers();
-
-// Uygulamayı başlatır ve dinlemeye geçer.
 app.Run();
