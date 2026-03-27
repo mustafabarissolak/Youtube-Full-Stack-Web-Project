@@ -5,11 +5,13 @@
 + mapping (AutoMapper) 
 + loglama
 + global hata yonetimi
++ smtp mail
 
 - identitydb + jwt
-- cors
-- smtp mail
+
 - unit tests
+
+- cors
 - docker (file ve compose)
 
 - nginx, docker, react, .net web api 
@@ -33,6 +35,6 @@ dotnet add package Serilog.Settings.Configuration
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 .\scripts\backup.ps1
 git add .
-git commit -m "Video disi revizez islemleri"
+git commit -m "smtp il email gonderme, ContactManager ve contactController eklendi" 
 git push
  

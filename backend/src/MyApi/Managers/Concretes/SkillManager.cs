@@ -1,5 +1,6 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using MyApi.Exceptions;
 using MyApi.Managers.Abstracts;
 using MyApi.Models.DTOs.SkillDtos;
 using MyApi.Models.Entities;
@@ -39,7 +40,7 @@ public class SkillManager : ISkillManager
     {
         var skill = await _repository.GetByIdAsync(Guid.Parse(id), false);
         if (skill == null)
-            throw new KeyNotFoundException("Beceri bulunamadı.");
+            throw new NotFoundException("Beceri bulunamadı.");
         return _mapper.Map<ResultSkillDto>(skill);
     }
 
@@ -57,7 +58,7 @@ public class SkillManager : ISkillManager
     {
         var skill = await _repository.GetAll(true).FirstOrDefaultAsync(x => x.Id == dto.Id);
         if (skill == null)
-            throw new KeyNotFoundException("Beceri bulunamadı.");
+            throw new NotFoundException("Beceri bulunamadı.");
         skill.UpdatedDate = DateTime.UtcNow;
         _mapper.Map(dto, skill);
         await _repository.SaveAsync();
@@ -67,7 +68,7 @@ public class SkillManager : ISkillManager
     {
         var skill = await _repository.GetByIdAsync(Guid.Parse(id));
         if (skill == null)
-            throw new KeyNotFoundException("Beceri bulunamadı.");
+            throw new NotFoundException("Beceri bulunamadı.");
         _repository.Remove(skill);
         await _repository.SaveAsync();
     }

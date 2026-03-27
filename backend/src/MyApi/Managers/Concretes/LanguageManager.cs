@@ -1,5 +1,6 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using MyApi.Exceptions;
 using MyApi.Managers.Abstracts;
 using MyApi.Models.DTOs.LanguageDtos;
 using MyApi.Models.Entities;
@@ -41,7 +42,7 @@ public class LanguageManager : ILanguageManager
         var entity = await _repository.GetByIdAsync(Guid.Parse(id), false);
 
         if (entity == null)
-            throw new KeyNotFoundException("Dil bulunamadi.");
+            throw new NotFoundException("Dil bulunamadi.");
 
         return _mapper.Map<ResultLanguageDto>(entity);
     }
@@ -61,7 +62,7 @@ public class LanguageManager : ILanguageManager
             .FirstOrDefaultAsync(x => x.Id == dto.Id);
 
         if (entity == null)
-            throw new KeyNotFoundException("Dil bulunamadi.");
+            throw new NotFoundException("Dil bulunamadi.");
 
         entity.UpdatedDate = DateTime.UtcNow;
 
@@ -75,7 +76,7 @@ public class LanguageManager : ILanguageManager
         var entity = await _repository.GetByIdAsync(Guid.Parse(id));
 
         if (entity == null)
-            throw new KeyNotFoundException("Dil bulunamadi.");
+            throw new NotFoundException("Dil bulunamadi.");
 
         _repository.Remove(entity);
         await _repository.SaveAsync();

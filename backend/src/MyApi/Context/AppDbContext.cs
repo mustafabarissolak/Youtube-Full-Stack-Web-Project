@@ -15,4 +15,5 @@ public class AppDbContext : DbContext
     public DbSet<Project> Projects => Set<Project>();
     public DbSet<ProjectDescription> ProjectDescriptions => Set<ProjectDescription>();
     public DbSet<Skill> Skills => Set<Skill>();
+    public DbSet<Contact> Contacts => Set<Contact>();
 }

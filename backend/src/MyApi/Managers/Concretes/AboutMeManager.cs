@@ -1,5 +1,6 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using MyApi.Exceptions;
 using MyApi.Managers.Abstracts;
 using MyApi.Models.DTOs.AboutMeDtos;
 using MyApi.Models.Entities;
@@ -39,7 +40,7 @@ public class AboutMeManager : IAboutMeManager
         var entity = await _repository.GetByIdAsync(Guid.Parse(id));
 
         if (entity == null)
-            throw new KeyNotFoundException("Hakkimda bulunamadi.");
+            throw new NotFoundException("Hakkimda bulunamadi.");
 
         return _mapper.Map<ResultAboutMeDto>(entity);
     }
@@ -58,7 +59,7 @@ public class AboutMeManager : IAboutMeManager
         var entity = await _repository.GetByIdAsync(dto.Id);
 
         if (entity == null)
-            throw new KeyNotFoundException("Hakkimda bulunamadi.");
+            throw new NotFoundException("Hakkimda bulunamadi.");
 
         entity.UpdatedDate = DateTime.UtcNow;
 
@@ -72,7 +73,7 @@ public class AboutMeManager : IAboutMeManager
         var entity = await _repository.GetByIdAsync(Guid.Parse(id));
 
         if (entity == null)
-            throw new KeyNotFoundException("Hakkimda bulunamadi.");
+            throw new NotFoundException("Hakkimda bulunamadi.");
 
         _repository.Remove(entity);
         await _repository.SaveAsync();

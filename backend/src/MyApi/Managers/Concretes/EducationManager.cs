@@ -1,5 +1,6 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using MyApi.Exceptions;
 using MyApi.Managers.Abstracts;
 using MyApi.Models.DTOs.EducationDtos;
 using MyApi.Models.Entities;
@@ -43,7 +44,7 @@ public class EducationManager : IEducationManager
         var entity = await _repository.GetByIdAsync(Guid.Parse(id), false);
 
         if (entity == null)
-            throw new KeyNotFoundException("Egitim bulunamadi.");
+            throw new NotFoundException("Egitim bulunamadi.");
 
         return _mapper.Map<ResultEducationDto>(entity);
     }
@@ -63,7 +64,7 @@ public class EducationManager : IEducationManager
             .FirstOrDefaultAsync(x => x.Id == dto.Id);
 
         if (entity == null)
-            throw new KeyNotFoundException("Egitim bulunamadi.");
+            throw new NotFoundException("Egitim bulunamadi.");
 
         entity.UpdatedDate = DateTime.UtcNow;
 
@@ -77,7 +78,7 @@ public class EducationManager : IEducationManager
         var entity = await _repository.GetByIdAsync(Guid.Parse(id));
 
         if (entity == null)
-            throw new KeyNotFoundException("Egitim bulunamadi.");
+            throw new NotFoundException("Egitim bulunamadi.");
 
         _repository.Remove(entity);
         await _repository.SaveAsync();

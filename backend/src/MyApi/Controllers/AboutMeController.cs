@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyApi.Managers.Abstracts;
 using MyApi.Models.DTOs.AboutMeDtos;
 
 namespace MyApi.Controllers;
 
+[Authorize("Admin")]
 [ApiController]
 [Route("api/[controller]")]
 public class AboutMeController : ControllerBase
@@ -15,6 +17,7 @@ public class AboutMeController : ControllerBase
         _manager = manager;
     }
 
+    [AllowAnonymous]
     [HttpGet("get-all-for-ui")]
     public async Task<IActionResult> GetAllForUi()
         => Ok(await _manager.GetAllForUiAsync());

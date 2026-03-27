@@ -1,5 +1,6 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using MyApi.Exceptions;
 using MyApi.Managers.Abstracts;
 using MyApi.Models.DTOs.ExperienceDtos;
 using MyApi.Models.Entities;
@@ -42,7 +43,7 @@ public class ExperienceManager : IExperienceManager
              .Include(x => x.Descriptions)
              .FirstOrDefaultAsync(x => x.Id == Guid.Parse(id));
         if (experience == null)
-            throw new KeyNotFoundException("Deneyim bulunamadı.");
+            throw new NotFoundException("Deneyim bulunamadı.");
 
         return _mapper.Map<ResultExperienceDto>(experience);
     }
@@ -65,7 +66,7 @@ public class ExperienceManager : IExperienceManager
 
         _mapper.Map(dto, experience);
         if (experience == null)
-            throw new KeyNotFoundException("Deneyim bulunamadı.");
+            throw new NotFoundException("Deneyim bulunamadı.");
         experience.UpdatedDate = DateTime.UtcNow;
         experience.Descriptions.Clear();
         foreach (var item in dto.Descriptions)
@@ -85,7 +86,7 @@ public class ExperienceManager : IExperienceManager
     {
         var experience = await _experienceRepository.GetByIdAsync(Guid.Parse(id));
         if (experience == null)
-            throw new KeyNotFoundException("Deneyim bulunamadı.");
+            throw new NotFoundException("Deneyim bulunamadı.");
         _experienceRepository.Remove(experience);
         await _experienceRepository.SaveAsync();
     }

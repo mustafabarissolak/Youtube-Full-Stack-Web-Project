@@ -3,18 +3,50 @@ using Microsoft.OpenApi.Models;
 using MyApi.Extensions;
 using MyApi.Middlewares;
 using Serilog;
+using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Serilog config
+#region Serilog config
+
+// builder.Host.UseSerilog((context, services, configuration) =>
+// {
+//     configuration
+//         .ReadFrom.Configuration(context.Configuration)
+//         .ReadFrom.Services(services)
+//         .Enrich.FromLogContext();
+// });
+var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+
+var configuration = new ConfigurationBuilder()
+    .AddJsonFile("appsettings.json")
+    .AddJsonFile($"appsettings.{environment}.json", optional: true)
+    .Build();
+
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(configuration)
+    .CreateLogger();
+
 builder.Host.UseSerilog((context, services, configuration) =>
 {
     configuration
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
-        .Enrich.FromLogContext();
+        .Enrich.FromLogContext()
+
+        // Console sink: Geliştirme ortamında tüm loglar (Information ve üstü)
+        .WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Information)
+
+        // PostgreSQL sink: Sadece Error ve üstü loglar
+        .WriteTo.PostgreSQL(
+            connectionString: context.Configuration.GetConnectionString("PostgreSQLConnection"),
+            tableName: "logs",
+            needAutoCreateTable: true,
+            restrictedToMinimumLevel: LogEventLevel.Error
+        );
 });
 
+#endregion
 builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddControllers()
     .ConfigureApiBehaviorOptions(options =>

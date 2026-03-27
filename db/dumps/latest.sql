@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict xAuT8O5CXhpp8AbiNgwwB7Kl0jMCecqPXiyXGNukdj0qDdtJ6eS3BYpUe7IcAyG
+\restrict LGKOoZPQCxnSrPO90dWDF24XgZEdBUW1xnncTuSK2oSRUSkQvMidcAaJ0Qm2o5U
 
 -- Dumped from database version 15.17
 -- Dumped by pg_dump version 15.17
@@ -36,6 +36,24 @@ CREATE TABLE public."AboutsMe" (
 
 
 ALTER TABLE public."AboutsMe" OWNER TO website;
+
+--
+-- Name: Contacts; Type: TABLE; Schema: public; Owner: website
+--
+
+CREATE TABLE public."Contacts" (
+    "Id" uuid NOT NULL,
+    "SenderName" text NOT NULL,
+    "SenderEmail" text NOT NULL,
+    "SenderSubject" text NOT NULL,
+    "SenderContent" text NOT NULL,
+    "IsRead" boolean NOT NULL,
+    "CreatedDate" timestamp with time zone NOT NULL,
+    "UpdatedDate" timestamp with time zone
+);
+
+
+ALTER TABLE public."Contacts" OWNER TO website;
 
 --
 -- Name: Educations; Type: TABLE; Schema: public; Owner: website
@@ -179,6 +197,15 @@ COPY public."AboutsMe" ("Id", "Title", "Description", "CreatedDate", "UpdatedDat
 
 
 --
+-- Data for Name: Contacts; Type: TABLE DATA; Schema: public; Owner: website
+--
+
+COPY public."Contacts" ("Id", "SenderName", "SenderEmail", "SenderSubject", "SenderContent", "IsRead", "CreatedDate", "UpdatedDate") FROM stdin;
+019d2f53-2d7d-749e-9496-59e7b66be5ea	test baris	testbaris@gmail.com	konu yok	mesaj icerigi en az 10 karakter olmali. :)	f	2026-03-27 12:44:33.519944+00	\N
+\.
+
+
+--
 -- Data for Name: Educations; Type: TABLE DATA; Schema: public; Owner: website
 --
 
@@ -240,6 +267,7 @@ COPY public."Skills" ("Id", "Name", "Value", "CreatedDate", "UpdatedDate") FROM 
 
 COPY public."__EFMigrationsHistory" ("MigrationId", "ProductVersion") FROM stdin;
 20260323190238_NewPcInitCreate	10.0.4
+20260327113905_AddContactEntity	10.0.4
 \.
 
 
@@ -257,6 +285,14 @@ COPY public.logs (message, message_template, level, "timestamp", exception, log_
 
 ALTER TABLE ONLY public."AboutsMe"
     ADD CONSTRAINT "PK_AboutsMe" PRIMARY KEY ("Id");
+
+
+--
+-- Name: Contacts PK_Contacts; Type: CONSTRAINT; Schema: public; Owner: website
+--
+
+ALTER TABLE ONLY public."Contacts"
+    ADD CONSTRAINT "PK_Contacts" PRIMARY KEY ("Id");
 
 
 --
@@ -357,5 +393,5 @@ ALTER TABLE ONLY public."ProjectDescriptions"
 -- PostgreSQL database dump complete
 --
 
-\unrestrict xAuT8O5CXhpp8AbiNgwwB7Kl0jMCecqPXiyXGNukdj0qDdtJ6eS3BYpUe7IcAyG
+\unrestrict LGKOoZPQCxnSrPO90dWDF24XgZEdBUW1xnncTuSK2oSRUSkQvMidcAaJ0Qm2o5U
 

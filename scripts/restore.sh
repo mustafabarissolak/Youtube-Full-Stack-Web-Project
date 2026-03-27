@@ -9,6 +9,7 @@ echo "Containerlar başlatılıyor..."
 docker compose up -d
 
 echo "DB hazır olması bekleniyor..."
+
 sleep 5
 
 echo "Backup geri yükleniyor..."
