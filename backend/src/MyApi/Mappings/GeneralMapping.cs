@@ -1,5 +1,8 @@
 using AutoMapper;
+using MyApi.Models.DTOs.AboutMeDtos;
+using MyApi.Models.DTOs.EducationDtos;
 using MyApi.Models.DTOs.ExperienceDtos;
+using MyApi.Models.DTOs.LanguageDtos;
 using MyApi.Models.DTOs.ProjectDtos;
 using MyApi.Models.DTOs.SkillDtos;
 using MyApi.Models.Entities;
@@ -10,7 +13,7 @@ public class GeneralMapping : Profile
 {
     public GeneralMapping()
     {
-        #region Projects
+        #region Project
         // Create: DTO -> Entity
         CreateMap<CreateProjectDto, Project>()
             .ForMember(dest => dest.Descriptions, opt => opt.MapFrom(src =>
@@ -35,7 +38,7 @@ public class GeneralMapping : Profile
                 src.Descriptions.Select(x => x.Value).ToList()));
         #endregion
 
-        #region Experiences
+        #region Experience
         CreateMap<CreateExperienceDto, Experience>()
             .ForMember(dest => dest.Descriptions, opt => opt.MapFrom(src =>
                 src.Descriptions.Select(value => new ExperienceDescription
@@ -57,11 +60,32 @@ public class GeneralMapping : Profile
                 src.Descriptions.Select(x => x.Value).ToList()));
         #endregion
 
-        #region Skills
+        #region Skill
         CreateMap<CreateSkillDto, Skill>();
         CreateMap<UpdateSkillDto, Skill>();
         CreateMap<Skill, ResultSkillDto>();
         CreateMap<Skill, ResultForUiSkillDto>();
+        #endregion
+
+        #region AboutMe
+        CreateMap<CreateAboutMeDto, AboutMe>();
+        CreateMap<UpdateAboutMeDto, AboutMe>();
+        CreateMap<AboutMe, ResultAboutMeDto>();
+        CreateMap<AboutMe, ResultForUiAboutMeDto>();
+        #endregion
+
+        #region Language
+        CreateMap<CreateLanguageDto, Language>();
+        CreateMap<UpdateLanguageDto, Language>();
+        CreateMap<Language, ResultLanguageDto>();
+        CreateMap<Language, ResultForUiLanguageDto>();
+        #endregion
+
+        #region Education
+        CreateMap<CreateEducationDto, Education>();
+        CreateMap<UpdateEducationDto, Education>();
+        CreateMap<Education, ResultEducationDto>();
+        CreateMap<Education, ResultForUiEducationDto>();
         #endregion
     }
 }

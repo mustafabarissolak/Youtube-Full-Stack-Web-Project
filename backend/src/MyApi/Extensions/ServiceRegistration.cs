@@ -8,8 +8,6 @@ using MyApi.Mappings;
 using MyApi.Repositories;
 using MyApi.Repositories.Abstracts;
 using MyApi.Repositories.Concretes;
-using MyApi.Validators.ExperienceValidators;
-using MyApi.Validators.ProjectValidators;
 
 namespace MyApi.Extensions;
 
@@ -18,7 +16,11 @@ public static class ServiceRegistration
     public static void AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<AppDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("PostgreSQLConnection")));
+
         services.AddAutoMapper(typeof(GeneralMapping));
+
+        services.AddFluentValidationAutoValidation();
+        services.AddValidatorsFromAssembly(typeof(ServiceRegistration).Assembly); // Tum validatorlari otomatik yukler
 
         #region Repositories 
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -38,19 +40,5 @@ public static class ServiceRegistration
         services.AddScoped<IProjectManager, ProjectManager>();
         services.AddScoped<IExperienceManager, ExperienceManager>();
         #endregion
-
-        #region FluentValidation
-        services.AddFluentValidationAutoValidation();
-
-        services.AddValidatorsFromAssemblyContaining<CreateProjectValidator>();
-        services.AddValidatorsFromAssemblyContaining<UpdateProjectValidator>();
-        services.AddValidatorsFromAssemblyContaining<RemoveProjectByIdValidator>();
-
-        services.AddValidatorsFromAssemblyContaining<CreateExperienceValidator>();
-        services.AddValidatorsFromAssemblyContaining<UpdateExperienceValidator>();
-        services.AddValidatorsFromAssemblyContaining<RemoveExperienceByIdValidator>();
-
-        #endregion
-
     }
 }

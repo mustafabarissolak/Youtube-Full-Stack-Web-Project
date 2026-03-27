@@ -1,3 +1,7 @@
+dotnet restore
+
+dotnet build
+
 Write-Host "Containerlar baslatiliyor..."
 
 docker compose up -d

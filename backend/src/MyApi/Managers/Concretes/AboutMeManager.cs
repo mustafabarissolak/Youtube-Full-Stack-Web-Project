@@ -1,6 +1,8 @@
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using MyApi.Managers.Abstracts;
 using MyApi.Models.DTOs.AboutMeDtos;
+using MyApi.Models.Entities;
 using MyApi.Repositories.Abstracts;
 
 namespace MyApi.Managers.Concretes;
@@ -8,123 +10,71 @@ namespace MyApi.Managers.Concretes;
 public class AboutMeManager : IAboutMeManager
 {
     private readonly IAboutMeRepository _repository;
+    private readonly IMapper _mapper;
 
-    public AboutMeManager(IAboutMeRepository repository)
+    public AboutMeManager(IAboutMeRepository repository, IMapper mapper)
     {
         _repository = repository;
-    }
-
-    public async Task CreateAsync(CreateAboutMeDto dto)
-    {
-        try
-        {
-            await _repository.AddAsync(new()
-            {
-                Id = Guid.NewGuid(),
-                CreatedDate = DateTime.UtcNow,
-                Title = dto.Title,
-                Description = dto.Description
-            });
-            await _repository.SaveAsync();
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Hakkimda eklenirken bir hata olustu. Hata mesaji: {ex.Message}", ex);
-        }
+        _mapper = mapper;
     }
 
     public async Task<List<ResultAboutMeDto>> GetAllAsync()
     {
-        try
-        {
-            var abouts = _repository.GetAll();
-            return await abouts.Select(a => new ResultAboutMeDto
-            {
-                Id = a.Id,
-                Title = a.Title,
-                Description = a.Description,
-                CreatedDate = a.CreatedDate,
-                UpdatedDate = a.UpdatedDate
-            }).ToListAsync();
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Hakkimda listelenirken bir hata olustu. Hata mesaji: {ex.Message}", ex);
-        }
+        var data = await _repository.GetAll(false).ToListAsync();
+        return _mapper.Map<List<ResultAboutMeDto>>(data);
     }
 
     public async Task<List<ResultForUiAboutMeDto>> GetAllForUiAsync()
     {
-        try
-        {
-            return await _repository.GetAll(tracking: false).Select(a => new ResultForUiAboutMeDto
+        return await _repository.GetAll(false)
+            .Select(x => new ResultForUiAboutMeDto
             {
-                Title = a.Title,
-                Description = a.Description
+                Title = x.Title,
+                Description = x.Description
             }).ToListAsync();
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Hakkimda listelenirken bir hata olustu. Hata mesaji: {ex.Message}", ex);
-        }
     }
 
     public async Task<ResultAboutMeDto> GetByIdAsync(string id)
     {
-        try
-        {
-            var about = await _repository.GetByIdAsync(Guid.Parse(id));
-            if (about == null)
-                throw new Exception($"Hakkimda bilgisi bulunamadi. Id: {id}");
-            return new ResultAboutMeDto
-            {
-                Id = about.Id,
-                Title = about.Title,
-                Description = about.Description,
-                CreatedDate = about.CreatedDate,
-                UpdatedDate = about.UpdatedDate
-            };
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Hakkimda goruntulenirken bir hata olustu. Hata mesaji: {ex.Message}", ex);
-        }
+        var entity = await _repository.GetByIdAsync(Guid.Parse(id));
+
+        if (entity == null)
+            throw new KeyNotFoundException("Hakkimda bulunamadi.");
+
+        return _mapper.Map<ResultAboutMeDto>(entity);
     }
 
-    public async Task RemoveByIdAsync(string id)
+    public async Task CreateAsync(CreateAboutMeDto dto)
     {
-        try
-        {
-            var existing = await _repository.GetByIdAsync(Guid.Parse(id));
-            if (existing == null)
-                throw new Exception($"Silinecek Hakkimda bilgisi bulunamadi. Id: {id}");
-            _repository.Remove(existing);
-            await _repository.SaveAsync();
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Hakkidma silinirken bir hata olustu. Hata mesaji: {ex.Message}", ex);
-        }
+        var entity = _mapper.Map<AboutMe>(dto);
+        entity.CreatedDate = DateTime.UtcNow;
+
+        await _repository.AddAsync(entity);
+        await _repository.SaveAsync();
     }
 
     public async Task UpdateAsync(UpdateAboutMeDto dto)
     {
-        try
-        {
-            var existing = await _repository.GetByIdAsync(dto.Id);
+        var entity = await _repository.GetByIdAsync(dto.Id);
 
-            if (existing == null)
-                throw new Exception($"Hakkimda bilgisi bulunamadi. Id: {dto.Id}");
+        if (entity == null)
+            throw new KeyNotFoundException("Hakkimda bulunamadi.");
 
-            existing.Title = dto.Title;
-            existing.Description = dto.Description;
-            existing.UpdatedDate = DateTime.UtcNow;
+        entity.UpdatedDate = DateTime.UtcNow;
 
-            await _repository.SaveAsync();
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Hakkidma guncellenirken bir hata olustu. Hata mesaji: {ex.Message}", ex);
-        }
+        _mapper.Map(dto, entity);
+
+        await _repository.SaveAsync();
+    }
+
+    public async Task RemoveByIdAsync(string id)
+    {
+        var entity = await _repository.GetByIdAsync(Guid.Parse(id));
+
+        if (entity == null)
+            throw new KeyNotFoundException("Hakkimda bulunamadi.");
+
+        _repository.Remove(entity);
+        await _repository.SaveAsync();
     }
 }
